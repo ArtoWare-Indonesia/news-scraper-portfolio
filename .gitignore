@@ -1,5 +1,16 @@
+# Virtual environment
+.venv/
+
+# Python
 __pycache__/
 *.pyc
+
+# Output
 output/
-.venv/
-.env
+
+# Logs
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

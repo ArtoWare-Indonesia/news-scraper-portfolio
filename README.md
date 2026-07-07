@@ -10,8 +10,10 @@ A modular Python news scraper built for freelance portfolio purposes.
 - Excel export
 - JSON export
 - Modular architecture
-- Error handling
 - Logging
+- Configurable news sources
+- Lightweight (no pandas dependency)
+- Compatible with Windows and Linux (antiX)
 
 ## Tech Stack
 
@@ -19,4 +21,15 @@ A modular Python news scraper built for freelance portfolio purposes.
 - Requests
 - BeautifulSoup
 - Feedparser
-- Pandas
+
+## Installation
+
+```bash
+git clone <repository-url>
+cd news-scraper-porfolio
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+python main.py

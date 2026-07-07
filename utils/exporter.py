@@ -1,6 +1,8 @@
 from pathlib import Path
-import pandas as pd
 from datetime import datetime
+import csv
+import json
+from openpyxl import Workbook
 
 
 class Exporter:
@@ -10,24 +12,47 @@ class Exporter:
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     def to_csv(self, data, filename=None):
-         if filename is None:
-             filename = f"news_{self.timestamp}.csv"
-             df = pd.DataFrame(data) 
-             filepath = self.output_dir / filename
-             df.to_csv(filepath, index=False, encoding="utf-8-sig")
-             return filepath
+        if filename is None:
+            filename = f"news_{self.timestamp}.csv"
+
+        filepath = self.output_dir / filename
+
+        if not data:
+            return filepath
+
+        with open(filepath, "w", newline="", encoding="utf-8-sig") as f:
+            writer = csv.DictWriter(f, fieldnames=data[0].keys())
+            writer.writeheader()
+            writer.writerows(data)
+
+        return filepath
 
     def to_excel(self, data, filename=None):
         if filename is None:
             filename = f"news_{self.timestamp}.xlsx"
-            df = pd.DataFrame(data) 
-            filepath = self.output_dir / filename
-            df.to_excel(filepath, index=False, encoding="utf-8-sig")
-            return filepath
+
+        filepath = self.output_dir / filename
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "News"
+
+        if data:
+            ws.append(list(data[0].keys()))
+            for row in data:
+                ws.append(list(row.values()))
+
+        wb.save(filepath)
+
+        return filepath
 
     def to_json(self, data, filename=None):
-         if filename is None:
-             filename = f"news_{self.timestamp}.json"
-             df = pd.DataFrame(data)
-             filepath = self.output_dir/ filename                 df.to_json(filepath,orient="records",force_ascii=False,indent=4)
-             return filepath
+        if filename is None:
+            filename = f"news_{self.timestamp}.json"
+
+        filepath = self.output_dir / filename
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
+        return filepath
