@@ -6,7 +6,13 @@ HEADERS = {
     )
 }
 
-RSS_SOURCES = {
-    "Antara": "https://www.antaranews.com/rss/terkini.xml",
-    "Tempo": "https://rss.tempo.co/nasional",
-}
+RSS_SOURCES = [
+    {
+        "name": "Antara",
+        "url": "https://www.antaranews.com/rss/terkini",
+    },
+    {
+        "name": "Tempo",
+        "url": "https://rss.tempo.co/nasional",
+    },
+]
