@@ -1,5 +1,6 @@
 from urllib.parse import urljoin
 
+from models import NewsItem
 from .base import BaseScraper
 
 
@@ -55,14 +56,16 @@ class AntaraScraper(BaseScraper):
                 else ""
             )
 
-            articles.append({
-                "title": title,
-                "url": url,
-                "category": category,
-                "published": published,
-                "summary": summary,
-                "source": "Antara",
-            })
+            item = NewsItem(
+                title=title,
+                url=url,
+                source="Antara",
+                category=category,
+                published=published,
+                summary=summary,
+            )
+
+            articles.append(item.to_dict())
 
         self.logger.info(f"Parsed {len(articles)} articles")
 
