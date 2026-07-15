@@ -101,9 +101,9 @@ news-scraper-porfolio/
 │
 ├── docs/
 │   └── images/
-│       ├── output-csv.png
-│       ├── output-excel.png
-│       └── output-json.png
+│       ├── news.csv.png
+│       ├── news.xlsx.png
+│       └── news.json.png
 │
 ├── output/
 │   ├── news.csv
