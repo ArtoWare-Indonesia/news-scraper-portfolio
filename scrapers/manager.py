@@ -1,5 +1,6 @@
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from config import HTML_SOURCES, RSS_SOURCES
 from scrapers.registry import HTML_SCRAPERS
@@ -15,32 +16,31 @@ class ScraperManager:
 
         # HTML scraper
         for source in HTML_SOURCES:
-
             if not source.get("enabled", True):
                 continue
 
-            scraper_class = HTML_SCRAPERS.get(source["name"])
+            scraper_class = HTML_SCRAPERS.get(source["name"].lower())
 
             if scraper_class is None:
                 continue
 
-            self.html_scrapers.append(
-                scraper_class(source)
-            )
+            self.html_scrapers.append(scraper_class(source))
 
         # RSS scraper
         for source in RSS_SOURCES:
-
             if not source.get("enabled", True):
                 continue
 
-            self.rss_scrapers.append(
-                RSSScraper(source)
-            )
+            self.rss_scrapers.append(RSSScraper(source))
 
     def get_scrapers(self):
         """Mengembalikan seluruh scraper yang aktif."""
         return self.html_scrapers + self.rss_scrapers
+
+    def _run_scraper(self, scraper):
+        """Menjalankan satu scraper."""
+        articles = scraper.scrape()
+        return scraper.source["name"], articles
 
     def run(self, selected=None):
         """
@@ -57,26 +57,15 @@ class ScraperManager:
         tuple[list, dict, list]
             (
                 all_articles,
-                {
-                    "Antara": 15,
-                    "Tempo": 45,
-                    ...
-                },
-                [
-                    "Tempo",
-                    ...
-                ]
+                {"Antara": 15, "Tempo": 45},
+                ["Tempo"]
             )
         """
 
         scrapers = self.get_scrapers()
 
         if selected:
-
-            selected = {
-                name.lower()
-                for name in selected
-            }
+            selected = {name.lower() for name in selected}
 
             scrapers = [
                 scraper
@@ -90,54 +79,57 @@ class ScraperManager:
         logger = logging.getLogger("ScraperManager")
 
         logger.info(
-            "Running %d scraper(s)...",
-            len(scrapers)
+            "Running %d scraper(s) in parallel...",
+            len(scrapers),
         )
 
         all_articles = []
         source_counts = {}
         failed_sources = []
 
-        for scraper in scrapers:
+        with ThreadPoolExecutor(
+            max_workers=min(8, len(scrapers))
+        ) as executor:
 
-            source_name = scraper.source["name"]
+            futures = {
+                executor.submit(self._run_scraper, scraper): scraper
+                for scraper in scrapers
+            }
 
-            logger.info(
-                "Running %s (%s)",
-                scraper.__class__.__name__,
-                source_name,
-            )
+            for future in as_completed(futures):
+                scraper = futures[future]
+                source_name = scraper.source["name"]
 
-            scraper_start = time.perf_counter()
+                scraper_start = time.perf_counter()
 
-            try:
-                articles = scraper.scrape()
-                count = len(articles)
+                try:
+                    _, articles = future.result()
 
-                source_counts[source_name] = count
-                all_articles.extend(articles)
+                    count = len(articles)
 
-                elapsed = time.perf_counter() - scraper_start
+                    source_counts[source_name] = count
+                    all_articles.extend(articles)
 
-                logger.info(
-                    "[SUCCESS] %s collected %d article(s) in %.2f seconds",
-                    source_name,
-                    count,
-                    elapsed,
-                )
+                    elapsed = time.perf_counter() - scraper_start
 
-            except Exception:
+                    logger.info(
+                        "[SUCCESS] %s collected %d article(s) in %.2f seconds",
+                        source_name,
+                        count,
+                        elapsed,
+                    )
 
-                elapsed = time.perf_counter() - scraper_start
+                except Exception:
+                    elapsed = time.perf_counter() - scraper_start
 
-                source_counts[source_name] = 0
-                failed_sources.append(source_name)
+                    source_counts[source_name] = 0
+                    failed_sources.append(source_name)
 
-                logger.exception(
-                    "[FAILED] %s failed after %.2f seconds",
-                    source_name,
-                    elapsed,
-                )
+                    logger.exception(
+                        "[FAILED] %s failed after %.2f seconds",
+                        source_name,
+                        elapsed,
+                    )
 
         logger.info(
             "Finished. Total articles collected: %d",

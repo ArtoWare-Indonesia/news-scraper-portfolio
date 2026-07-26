@@ -1,5 +1,5 @@
 APP_NAME = "News Scraper Portfolio"
-APP_VERSION = "0.6.0"
+APP_VERSION = "0.7.0"
 
 HEADERS = {
     "User-Agent": (
@@ -20,6 +20,21 @@ HTML_SOURCES = [
         "url": "https://www.tempo.co",
         "enabled": True,
     },
+    {
+    "name": "Detik",
+    "url": "https://www.detik.com/terpopuler",
+    "enabled": True,
+    },
+    {
+     "name": "CNBC",
+     "url": "https://www.cnbcindonesia.com/news",
+     "enabled": True,
+    },
+    {
+    "name": "Republika",
+    "url": "https://news.republika.co.id/nasional-news",
+    "enabled": True,
+     },
 ]
 
 RSS_SOURCES = [
@@ -33,4 +48,5 @@ RSS_SOURCES = [
         "url": "https://rss.tempo.co/nasional",
         "enabled": False,
     },
+    
 ]

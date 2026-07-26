@@ -1,5 +1,6 @@
 import argparse
 
+from config import HTML_SOURCES, RSS_SOURCES
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -10,7 +11,9 @@ def parse_args():
     parser.add_argument(
         "--source",
         type=str,
-        choices=["antara", "tempo"],
+        choices=[
+          source["name"].lower()
+          for source in HTML_SOURCES + RSS_SOURCES],
         help="Run only the selected news source."
     )
 

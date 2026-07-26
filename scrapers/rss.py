@@ -10,6 +10,10 @@ class RSSScraper(BaseScraper):
     def __init__(self, source):
         super().__init__(source)
 
+    def parse(self,soup):
+      #""""""tidak digunakan """"""
+      return[]
+
     def scrape(self):
         self.logger.info(
             "Running RSSScraper (%s)",
