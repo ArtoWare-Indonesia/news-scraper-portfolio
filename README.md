@@ -1,68 +1,85 @@
 # News Scraper Portfolio
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue)
-![Version](https://img.shields.io/badge/version-v0.6.0-green)
+![Version](https://img.shields.io/badge/version-v0.7.0-green)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 A modular Python news scraper framework built as a freelance portfolio project.
 
-The project demonstrates how to build reusable, maintainable, and extensible web scrapers using modern Python architecture. Currently it supports HTML news scraping with a reusable scraping framework and standardized data model.
+This project demonstrates how to build reusable, maintainable, and extensible web scrapers using modern Python architecture. It supports scraping news from multiple sources using both **HTML** and **RSS**, exporting the collected articles into various formats.
 
 ---
 
-## Current Release
+# Current Release
 
-**Latest Version:** **v0.6.0**
+**Latest Version:** **v0.7.0**
 
-### Command Line Interface
+## Command Line Interface
 
 ```bash
 python main.py --help
+
 python main.py --source antara
+
+python main.py --source republika
+
 python main.py --limit 10
+
 python main.py --format json
+
 python main.py --source tempo --limit 5 --format csv
 ```
+
 ---
 
-## Features
+# Features
 
-- Modular HTML scraper framework
+- Modular scraper architecture
+- HTML and RSS scraper support
+- Parallel scraping manager
 - Reusable `BaseScraper`
 - Automatic HTTP retry using `requests.Session`
 - BeautifulSoup HTML parsing
-- Centralized `ScraperManager`
+- Feedparser RSS parsing
 - Standardized `NewsItem` data model
 - CSV, JSON and Excel export
+- Timestamped output files
 - Configurable scraper registry
 - Improved logging and execution timing
-- Scraping summary with exported file reporting
+- Scraping summary report
 - Initial unit tests with `pytest`
 - Lightweight (no pandas dependency)
-- Compatible with Windows and Linux
+- Cross-platform (Windows & Linux)
 
-### ✨ New Features
+## New in v0.7.0
 
-- Added `--source` option to run a specific scraper.
-- Added `--limit` option to limit exported articles.
-- Added `--format` option to export CSV, JSON, XLSX, or all formats.
-- Improved CLI help and argument handling with argparse.
+- Added **Detik** scraper
+- Added **CNBC Indonesia** scraper
+- Added **Republika RSS** scraper
+- Parallel scraper execution
+- CLI improvements
+- Better logging and execution summary
+- Cleaner exporter implementation
 
 ---
 
-## Current Supported Sources
+# Supported Sources
 
-### HTML
+## HTML
 
 | Source | Status |
 |---------|--------|
 | Antara | ✅ |
 | Tempo | ✅ |
+| Detik | ✅ |
+| CNBC Indonesia | ✅ |
 
-### RSS
+## RSS
 
-The RSS scraping engine from v0.2.x is still available in the project and will be integrated into the new `ScraperManager` architecture in a future release.
+| Source | Status |
+|---------|--------|
+| Republika | ✅ |
 
 ---
 
@@ -72,187 +89,196 @@ The RSS scraping engine from v0.2.x is still available in the project and will b
                     main.py
                         │
                         ▼
-               ScraperManager
+                 ScraperManager
                         │
-          ┌─────────────┴─────────────┐
-          ▼                           ▼
-   AntaraScraper               TempoScraper
-          │                           │
-          └─────────────┬─────────────┘
-                        ▼
-                  BaseScraper
-                        │
-             fetch() → parse()
-                        │
-                        ▼
-                   NewsItem
-                        │
-                        ▼
-                    Exporter
-                        │
-      ┌───────────┬────────────┬───────────┐
-      ▼           ▼            ▼
-   news.csv    news.json    news.xlsx
+      ┌─────────────────┼─────────────────┐
+      ▼                 ▼                 ▼
+ HTML Scrapers     RSS Scrapers      Exporter
+      │                 │
+      ▼                 ▼
+ BaseScraper      RSSScraper
+      │                 │
+      └──────────┬──────┘
+                 ▼
+             NewsItem
+                 │
+                 ▼
+       CSV / JSON / XLSX
 ```
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```
 news-scraper-portfolio/
-│
+
 ├── config.py
 ├── main.py
 ├── pytest.ini
 ├── requirements.txt
 │
 ├── models/
-│   ├── __init__.py
 │   └── news.py
 │
-├── scrapers/ 
-│   ├── __init__.py
+├── scrapers/
 │   ├── base.py
 │   ├── manager.py
 │   ├── registry.py
 │   ├── rss.py
-|   └── html/
-|       ├── __init__.py
-|       ├── antara.py
-|       └── tempo.py
-|
+│   └── html/
+│       ├── antara.py
+│       ├── tempo.py
+│       ├── detik.py
+│       └── cnbc.py
+│
 ├── utils/
 │   ├── cli.py
-|   ├── exporter.py
+│   ├── exporter.py
 │   └── logger.py
 │
 ├── docs/
 │   └── images/
-│       ├── news.csv.png
-│       ├── news.xlsx.png
-│       ├── news.json.png
-|       └── terminal-demo.gif
 │
 ├── output/
-│   ├── news.csv
-│   ├── news.xlsx
-│   └── news.json
 │
-├── tests/
-    ├── __init__.py
+└── tests/
     ├── test_exporter.py
     ├── test_manager.py
     └── test_newsitem.py
+```
 
 ---
 
-## Tech Stack
+# Tech Stack
 
-- Python 3
+- Python 3.13
 - Requests
 - BeautifulSoup4
+- Feedparser
 - urllib3
 - openpyxl
+- pytest
 
 ---
 
-## Requirements
+# Requirements
 
 - Python 3.13+
 - pip
 - Virtual Environment (recommended)
 
-Main dependencies:
+Install dependencies:
 
-- requests
-- beautifulsoup4
-- lxml
-- feedparser
-- openpyxl
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## Installation
+# Installation
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ArtoWare-Indonesia/news-scraper-portfolio.git
 
 cd news-scraper-portfolio
 
-python3 -m venv .venv
+python -m venv .venv
 
-source .venv/bin/activate
+source .venv/bin/activate      # Linux
+
+.venv\Scripts\activate         # Windows
 
 pip install -r requirements.txt
 ```
-## 💻 Running the Project
-Source : antara
-Format : json
-Limit  : 10
+
+---
+
+# Running the Project
+
+Example:
+
+```text
+Source : None
+Format : all
+Limit  : None
 
 ============================================================
-News Scraper Portfolio v0.6.0
+News Scraper Portfolio v0.7.0
 ============================================================
 
 Starting news scraping...
 
-Running 1 scraper(s)...
-Running AntaraScraper (Antara)
-[SUCCESS] Antara collected 15 article(s) in 1.18 seconds
-Finished. Total articles collected: 15
-Limiting export to 10 article(s).
+Running 5 scraper(s)...
+
+Running Antara
+Running Tempo
+Running Detik
+Running CNBC Indonesia
+Running Republika
+
+Finished.
 
 ============================================================
 SCRAPING SUMMARY
 ============================================================
-Version          : 0.6.0
-Successful       : 1
-Failed           : 0
-Exported articles   : 10
+Successful : 5
+Failed     : 0
+Articles   : 78
 
 Articles by source
-  Antara         : 10  article(s)
+
+Antara      : 15
+Tempo       : 12
+Detik       : 20
+CNBC        : 31
+Republika   : 10
 
 Exported files
-  output/news_20260716_101530.json
 
-Elapsed time     : 0.54 seconds
+output/news_20260724_170611.csv
+output/news_20260724_170611.json
+output/news_20260724_170611.xlsx
+
+Elapsed time : 2.01 seconds
 ============================================================
-Scraping completed successfully!
+```
 
 ---
 
-## 📸 Output Preview
+# Output Preview
 
-### CSV Output
-![CSV Output](docs/images/output.csv.png)
+### CSV
 
-### Excel Output
-![Excel Output](docs/images/output.excel.png)
+![CSV Output](docs/images/news.csv.png)
 
-### JSON Output
-![JSON Output](docs/images/output.json.png)
+### Excel
+
+![Excel Output](docs/images/news.xlsx.png)
+
+### JSON
+
+![JSON Output](docs/images/news.json.png)
 
 ---
 
-## Output
+# Output Directory
 
-Generated files are stored in the `output/` directory.
+Generated files are stored inside:
 
 ```
 output/
-├── news_20260716_101530.csv
-├── news_20260716_101530.json
-└── news_20260716_101530.xlsx
 
+news_YYYYMMDD_HHMMSS.csv
+news_YYYYMMDD_HHMMSS.json
+news_YYYYMMDD_HHMMSS.xlsx
 ```
 
 ---
 
-## Development
+# Testing
 
-Run individual scraper tests:
+Run all unit tests:
 
 ```bash
 pytest
@@ -260,42 +286,38 @@ pytest
 
 ---
 
-## Design Principles
+# Design Principles
 
-This project follows several software engineering principles:
-
-- Modular architecture
+- Modular Architecture
 - Template Method Pattern
 - Single Responsibility Principle (SRP)
 - Open/Closed Principle (OCP)
-- Reusable components
-- Standardized data model
+- Reusable Components
+- Standardized Data Model
 
 ---
 
-## Roadmap
+# Roadmap
 
-### ✅ v0.6.0
-- CLI (`--source`, `--format`, `--limit`)
+## v0.8.0
 
-### v0.7.0
-- Kompas scraper
-- CNBC Indonesia scraper
-- Detik scraper
-- Parallel scraping
-- YAML/JSON configuration
-- Date/category filtering
+- YAML configuration support
+- JSON configuration support
+- Date filtering
+- Category filtering
 
-### 🎯 v1.0.0
+## v1.0.0
+
 - Stable API
 - Plugin-based scraper system
-- GitHub Actions
+- GitHub Actions CI
 - Complete documentation
+- PyPI package
 
 ---
 
-## License
+# License
 
-This project is intended for educational purposes and freelance portfolio demonstrations.
+This project is intended for educational purposes, portfolio demonstrations, and freelance showcasing.
 
-Please respect each website's Terms of Service and robots.txt when scraping.
+Licensed under the MIT License.
